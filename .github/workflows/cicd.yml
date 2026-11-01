@@ -1,5 +1,5 @@
 
-name: Book Review CI
+name: Book Review CI-CD
 
 on:
   push:
@@ -32,3 +32,21 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t book-review-app:${{ github.sha }} .
+
+  deploy:
+    needs: test-and-build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, Windows, X64]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build deployment image
+        run: docker build -t book-review-app:${{ github.sha }} .
+
+      - name: Deploy to Kubernetes
+        run: kubectl set image deployment/book-review book-review=book-review-app:${{ github.sha }}
+
+      - name: Verify deployment
+        run: kubectl rollout status deployment/book-review --timeout=180s
