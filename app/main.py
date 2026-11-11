@@ -1,7 +1,9 @@
 from fastapi import FastAPI, HTTPException
+from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel
 
 app = FastAPI(title="Book Review API")
+Instrumentator().instrument(app).expose(app)
 
 
 class Book(BaseModel):

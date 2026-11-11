@@ -12,10 +12,14 @@ spec:
     metadata:
       labels:
         app: book-review
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8000"
     spec:
       containers:
         - name: book-review
-          image: book-review-app:1.0
+          image: book-review-app:monitoring
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
